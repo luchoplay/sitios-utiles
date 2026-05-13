@@ -15,6 +15,26 @@
     --font-body: 'DM Sans', sans-serif; --font-mono: 'DM Mono', monospace;
   }
   body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; min-height: 100vh; padding: 2rem 1.5rem; }
+
+  #login-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; margin: -2rem -1.5rem;
+  }
+  .login-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 2.5rem; width: 100%; max-width: 340px;
+  }
+  .login-card h2 { font-family: var(--font-mono); font-size: 1rem; color: var(--accent); margin-bottom: 0.4rem; }
+  .login-card p { font-size: 12px; color: var(--muted); font-family: var(--font-mono); margin-bottom: 1.5rem; }
+  .login-card label { font-size: 11px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 6px; }
+  .login-card input { font-family: var(--font-body); font-size: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 12px; color: var(--text); outline: none; width: 100%; margin-bottom: 1rem; transition: border-color 0.15s; }
+  .login-card input:focus { border-color: var(--accent); }
+  .login-btn { width: 100%; padding: 10px; background: var(--accent); color: #0f0f0f; border: none; border-radius: 6px; font-family: var(--font-mono); font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+  .login-btn:hover { background: var(--accent-dim); }
+  .login-error { font-size: 12px; font-family: var(--font-mono); color: var(--danger); margin-top: 10px; min-height: 16px; }
+  .login-hint { font-size: 11px; font-family: var(--font-mono); color: #333; margin-top: 12px; }
+
+  #app { display: none; }
   header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; }
   header h1 { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 500; color: var(--accent); letter-spacing: -0.02em; }
   .header-btns { display: flex; gap: 8px; }
@@ -69,69 +89,85 @@
 </head>
 <body>
 
-<header>
-  <h1>// sitios_web_utiles</h1>
-  <div class="header-btns">
-    <button class="btn-io" onclick="exportar()">↓ exportar</button>
-    <button class="btn-io" onclick="document.getElementById('file-import').click()">↑ importar</button>
-    <input type="file" id="file-import" accept=".json" onchange="importar(event)" />
+<div id="login-screen">
+  <div class="login-card">
+    <h2>// sitios_web_utiles</h2>
+    <p>Ingresá la contraseña para continuar</p>
+    <label>Contraseña</label>
+    <input type="password" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') verificar()" />
+    <button class="login-btn" onclick="verificar()">Entrar</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-hint">pista: teléfono cyber</div>
   </div>
-</header>
+</div>
 
-<div class="form-card">
-  <div class="form-grid">
-    <div class="form-group">
-      <label>Nombre</label>
-      <input type="text" id="inp-nombre" placeholder="Ej: Downsub" />
+<div id="app">
+  <header>
+    <h1>// sitios_web_utiles</h1>
+    <div class="header-btns">
+      <button class="btn-io" onclick="exportar()">↓ exportar</button>
+      <button class="btn-io" onclick="document.getElementById('file-import').click()">↑ importar</button>
+      <button class="btn-io" onclick="cerrarSesion()">salir</button>
+      <input type="file" id="file-import" accept=".json" onchange="importar(event)" />
     </div>
-    <div class="form-group">
-      <label>URL</label>
-      <input type="url" id="inp-url" placeholder="https://..." />
-    </div>
-    <div class="form-group">
-      <label>Categoría</label>
-      <select id="inp-cat"></select>
-    </div>
-    <div class="form-group">
-      <label>Categoría personalizada</label>
-      <div class="cat-custom-row">
-        <input type="text" id="inp-cat-custom" placeholder="Ej: Finanzas" onkeydown="if(event.key==='Enter') agregarCategoria()" />
-        <button class="btn-cat-add" onclick="agregarCategoria()">+</button>
+  </header>
+
+  <div class="form-card">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nombre</label>
+        <input type="text" id="inp-nombre" placeholder="Ej: Downsub" />
       </div>
-      <div class="cat-chips" id="cat-chips"></div>
+      <div class="form-group">
+        <label>URL</label>
+        <input type="url" id="inp-url" placeholder="https://..." />
+      </div>
+      <div class="form-group">
+        <label>Categoría</label>
+        <select id="inp-cat"></select>
+      </div>
+      <div class="form-group">
+        <label>Categoría personalizada</label>
+        <div class="cat-custom-row">
+          <input type="text" id="inp-cat-custom" placeholder="Ej: Finanzas" onkeydown="if(event.key==='Enter') agregarCategoria()" />
+          <button class="btn-cat-add" onclick="agregarCategoria()">+</button>
+        </div>
+        <div class="cat-chips" id="cat-chips"></div>
+      </div>
+      <div class="form-group full">
+        <label>Descripción</label>
+        <textarea id="inp-desc" placeholder="Para qué sirve este sitio..."></textarea>
+      </div>
     </div>
-    <div class="form-group full">
-      <label>Descripción</label>
-      <textarea id="inp-desc" placeholder="Para qué sirve este sitio..."></textarea>
-    </div>
+    <button class="btn-add" onclick="agregar()">+ agregar sitio</button>
+    <div class="status" id="status"></div>
   </div>
-  <button class="btn-add" onclick="agregar()">+ agregar sitio</button>
-  <div class="status" id="status"></div>
-</div>
 
-<div class="toolbar">
-  <input type="text" id="buscador" placeholder="Buscar por nombre, URL o descripción..." oninput="renderTabla()" />
-  <select id="filtro-cat" onchange="renderTabla()"></select>
-</div>
+  <div class="toolbar">
+    <input type="text" id="buscador" placeholder="Buscar por nombre, URL o descripción..." oninput="renderTabla()" />
+    <select id="filtro-cat" onchange="renderTabla()"></select>
+  </div>
 
-<div id="contador" class="count"></div>
+  <div id="contador" class="count"></div>
 
-<div class="table-wrap">
-  <table>
-    <thead>
-      <tr>
-        <th style="width:15%">Nombre</th>
-        <th style="width:22%">URL</th>
-        <th style="width:16%">Categoría</th>
-        <th style="width:42%">Descripción</th>
-        <th style="width:5%"></th>
-      </tr>
-    </thead>
-    <tbody id="tabla-body"><tr><td colspan="5" class="empty">cargando...</td></tr></tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:15%">Nombre</th>
+          <th style="width:22%">URL</th>
+          <th style="width:16%">Categoría</th>
+          <th style="width:42%">Descripción</th>
+          <th style="width:5%"></th>
+        </tr>
+      </thead>
+      <tbody id="tabla-body"><tr><td colspan="5" class="empty">cargando...</td></tr></tbody>
+    </table>
+  </div>
 </div>
 
 <script>
+const PASS = '43483210';
 const SUPABASE_URL = 'https://pykmqoczftewidaaeged.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5a21xb2N6ZnRld2lkYWFlZ2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MzUzNzEsImV4cCI6MjA5NDIxMTM3MX0.SvMe7H3SQ7FMl-1G00jLgZ0S5H9eP3vE8hmVXDQV97Q';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -139,6 +175,36 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const CATS_DEFAULT = ['Transcripción / Subtítulos','Diseño','IA / Automatización','Productividad','Video / Audio','Marketing','Desarrollo','Otro'];
 let sitios = [];
 let catsCustom = JSON.parse(localStorage.getItem('cats_custom') || '[]');
+
+function verificar() {
+  const val = document.getElementById('pwd-input').value;
+  if (val === PASS) {
+    sessionStorage.setItem('auth', '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderSelects();
+    renderChips();
+    cargarSitios();
+  } else {
+    document.getElementById('login-error').textContent = 'Contraseña incorrecta.';
+    setTimeout(() => document.getElementById('login-error').textContent = '', 3000);
+  }
+}
+
+function cerrarSesion() {
+  sessionStorage.removeItem('auth');
+  document.getElementById('pwd-input').value = '';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+if (sessionStorage.getItem('auth') === '1') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  renderSelects();
+  renderChips();
+  cargarSitios();
+}
 
 async function cargarSitios() {
   const { data, error } = await sb.from('sitios').select('*').order('id', { ascending: false });
@@ -266,10 +332,6 @@ function renderTabla() {
     </tr>
   `).join('');
 }
-
-renderSelects();
-renderChips();
-cargarSitios();
 </script>
 </body>
 </html>
