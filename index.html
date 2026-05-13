@@ -133,7 +133,7 @@
 
 <script>
 const SUPABASE_URL = 'https://pykmqoczftewidaaeged.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_XQMSfy439RPVl6OeoWiZqA_9iupOVys';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5a21xb2N6ZnRld2lkYWFlZ2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MzUzNzEsImV4cCI6MjA5NDIxMTM3MX0.SvMe7H3SQ7FMl-1G00jLgZ0S5H9eP3vE8hmVXDQV97Q';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const CATS_DEFAULT = ['Transcripción / Subtítulos','Diseño','IA / Automatización','Productividad','Video / Audio','Marketing','Desarrollo','Otro'];
@@ -142,7 +142,7 @@ let catsCustom = JSON.parse(localStorage.getItem('cats_custom') || '[]');
 
 async function cargarSitios() {
   const { data, error } = await sb.from('sitios').select('*').order('id', { ascending: false });
-  if (error) { setStatus('Error al cargar datos.', false); return; }
+  if (error) { setStatus('Error al cargar: ' + error.message, false); return; }
   sitios = data || [];
   renderTabla();
 }
@@ -186,7 +186,7 @@ function setStatus(msg, ok) {
   const el = document.getElementById('status');
   el.textContent = msg;
   el.style.color = ok ? '#c8f060' : '#ff5c5c';
-  setTimeout(() => el.textContent = '', 3000);
+  setTimeout(() => el.textContent = '', 4000);
 }
 
 async function agregar() {
@@ -196,7 +196,7 @@ async function agregar() {
   const d = document.getElementById('inp-desc').value.trim();
   if (!n || !u) { setStatus('Nombre y URL son obligatorios.', false); return; }
   const { error } = await sb.from('sitios').insert([{ nombre: n, url: u, categoria: c, descripcion: d }]);
-  if (error) { setStatus('Error al guardar.', false); return; }
+  if (error) { setStatus('Error al guardar: ' + error.message, false); return; }
   document.getElementById('inp-nombre').value = '';
   document.getElementById('inp-url').value = '';
   document.getElementById('inp-cat').value = '';
@@ -208,7 +208,7 @@ async function agregar() {
 async function eliminar(id) {
   if (!confirm('¿Eliminar este sitio?')) return;
   const { error } = await sb.from('sitios').delete().eq('id', id);
-  if (error) { setStatus('Error al eliminar.', false); return; }
+  if (error) { setStatus('Error al eliminar: ' + error.message, false); return; }
   await cargarSitios();
 }
 
@@ -230,7 +230,7 @@ function importar(e) {
       if (datos.sitios && datos.sitios.length > 0) {
         const rows = datos.sitios.map(s => ({ nombre: s.nombre, url: s.url, categoria: s.categoria||'', descripcion: s.desc||s.descripcion||'' }));
         const { error } = await sb.from('sitios').insert(rows);
-        if (error) { setStatus('Error al importar.', false); return; }
+        if (error) { setStatus('Error al importar: ' + error.message, false); return; }
       }
       if (datos.catsCustom) { catsCustom = datos.catsCustom; localStorage.setItem('cats_custom', JSON.stringify(catsCustom)); }
       renderSelects(); renderChips();
