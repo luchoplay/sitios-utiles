@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sitios Web Útiles</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f0f; --surface: #181818; --border: #2a2a2a;
+    --accent: #c8f060; --accent-dim: #9bb845;
+    --text: #e8e8e0; --muted: #666660; --danger: #ff5c5c;
+    --font-body: 'DM Sans', sans-serif; --font-mono: 'DM Mono', monospace;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; min-height: 100vh; padding: 2rem 1.5rem; }
+  header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; }
+  header h1 { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 500; color: var(--accent); letter-spacing: -0.02em; }
+  .header-btns { display: flex; gap: 8px; }
+  .btn-io { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+  .btn-io:hover { border-color: var(--accent); color: var(--accent); }
+  .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 11px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  input, select, textarea { font-family: var(--font-body); font-size: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 12px; color: var(--text); outline: none; transition: border-color 0.15s; width: 100%; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  select option { background: var(--bg); }
+  textarea { resize: vertical; min-height: 64px; }
+  .cat-custom-row { display: flex; gap: 8px; align-items: stretch; }
+  .cat-custom-row input { flex: 1; }
+  .btn-cat-add { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 0 14px; font-family: var(--font-mono); font-size: 18px; color: var(--accent); cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+  .btn-cat-add:hover { background: #1e2a0e; }
+  .cat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 0; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-family: var(--font-mono); background: #1e2a0e; color: var(--accent); border: 1px solid #2e3f14; }
+  .chip button { background: none; border: none; cursor: pointer; color: var(--accent-dim); font-size: 12px; padding: 0; line-height: 1; }
+  .chip button:hover { color: var(--danger); }
+  .btn-add { width: 100%; margin-top: 14px; padding: 10px; background: var(--accent); color: #0f0f0f; border: none; border-radius: 6px; font-family: var(--font-mono); font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s, transform 0.1s; }
+  .btn-add:hover { background: var(--accent-dim); }
+  .btn-add:active { transform: scale(0.99); }
+  .status { font-size: 12px; font-family: var(--font-mono); color: var(--accent); margin-top: 10px; min-height: 16px; }
+  .toolbar { display: flex; gap: 10px; margin-bottom: 10px; }
+  .toolbar input { flex: 1; }
+  .toolbar select { width: 200px; }
+  .count { font-size: 12px; font-family: var(--font-mono); color: var(--muted); margin-bottom: 10px; }
+  .table-wrap { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+  th { background: var(--surface); padding: 10px 14px; text-align: left; font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; word-break: break-word; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-family: var(--font-mono); background: #1e2a0e; color: var(--accent); border: 1px solid #2e3f14; }
+  .link-cell a { color: var(--accent-dim); text-decoration: none; font-family: var(--font-mono); font-size: 12px; }
+  .link-cell a:hover { text-decoration: underline; }
+  .desc-cell { color: #999; font-size: 13px; }
+  .name-cell { font-weight: 500; }
+  .btn-del { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; padding: 4px 6px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
+  .btn-del:hover { color: var(--danger); background: #2a1010; }
+  .empty { text-align: center; padding: 3rem; color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
+  #file-import { display: none; }
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .toolbar { flex-direction: column; }
+    .toolbar select { width: 100%; }
+    table { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>// sitios_web_utiles</h1>
+  <div class="header-btns">
+    <button class="btn-io" onclick="exportar()">↓ exportar</button>
+    <button class="btn-io" onclick="document.getElementById('file-import').click()">↑ importar</button>
+    <input type="file" id="file-import" accept=".json" onchange="importar(event)" />
+  </div>
+</header>
+
+<div class="form-card">
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Nombre</label>
+      <input type="text" id="inp-nombre" placeholder="Ej: Downsub" />
+    </div>
+    <div class="form-group">
+      <label>URL</label>
+      <input type="url" id="inp-url" placeholder="https://..." />
+    </div>
+    <div class="form-group">
+      <label>Categoría</label>
+      <select id="inp-cat"></select>
+    </div>
+    <div class="form-group">
+      <label>Categoría personalizada</label>
+      <div class="cat-custom-row">
+        <input type="text" id="inp-cat-custom" placeholder="Ej: Finanzas" onkeydown="if(event.key==='Enter') agregarCategoria()" />
+        <button class="btn-cat-add" onclick="agregarCategoria()">+</button>
+      </div>
+      <div class="cat-chips" id="cat-chips"></div>
+    </div>
+    <div class="form-group full">
+      <label>Descripción</label>
+      <textarea id="inp-desc" placeholder="Para qué sirve este sitio..."></textarea>
+    </div>
+  </div>
+  <button class="btn-add" onclick="agregar()">+ agregar sitio</button>
+  <div class="status" id="status"></div>
+</div>
+
+<div class="toolbar">
+  <input type="text" id="buscador" placeholder="Buscar por nombre, URL o descripción..." oninput="renderTabla()" />
+  <select id="filtro-cat" onchange="renderTabla()"></select>
+</div>
+
+<div id="contador" class="count"></div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:15%">Nombre</th>
+        <th style="width:22%">URL</th>
+        <th style="width:16%">Categoría</th>
+        <th style="width:42%">Descripción</th>
+        <th style="width:5%"></th>
+      </tr>
+    </thead>
+    <tbody id="tabla-body"></tbody>
+  </table>
+</div>
+
+<script>
+const CATS_DEFAULT = ['Transcripción / Subtítulos','Diseño','IA / Automatización','Productividad','Video / Audio','Marketing','Desarrollo','Otro'];
+let sitios = JSON.parse(localStorage.getItem('sitios_utiles') || '[]');
+let catsCustom = JSON.parse(localStorage.getItem('cats_custom') || '[]');
+
+if (sitios.length === 0) {
+  sitios = [{ id: Date.now(), nombre: 'Downsub', url: 'https://downsub.com', categoria: 'Transcripción / Subtítulos', desc: 'Descarga subtítulos y transcripciones de videos de YouTube en texto, sin registro ni instalación.' }];
+  guardar();
+}
+
+function guardar() { localStorage.setItem('sitios_utiles', JSON.stringify(sitios)); }
+function guardarCats() { localStorage.setItem('cats_custom', JSON.stringify(catsCustom)); }
+function todasLasCats() { return [...CATS_DEFAULT, ...catsCustom]; }
+
+function renderSelects() {
+  const cats = todasLasCats();
+  const opts = cats.map(c => `<option>${c}</option>`).join('');
+  document.getElementById('inp-cat').innerHTML = '<option value="">Seleccioná una categoría</option>' + opts;
+  document.getElementById('filtro-cat').innerHTML = '<option value="">Todas las categorías</option>' + opts;
+}
+
+function renderChips() {
+  document.getElementById('cat-chips').innerHTML = catsCustom.map(c =>
+    `<span class="chip">${c}<button onclick="eliminarCategoria('${c.replace(/'/g,"\\'")}')">✕</button></span>`
+  ).join('');
+}
+
+function agregarCategoria() {
+  const inp = document.getElementById('inp-cat-custom');
+  const val = inp.value.trim();
+  if (!val) return;
+  if (todasLasCats().map(c=>c.toLowerCase()).includes(val.toLowerCase())) { setStatus('Esa categoría ya existe.', false); return; }
+  catsCustom.push(val);
+  guardarCats();
+  inp.value = '';
+  renderSelects();
+  renderChips();
+  setStatus('Categoría "' + val + '" agregada.', true);
+}
+
+function eliminarCategoria(cat) {
+  catsCustom = catsCustom.filter(c => c !== cat);
+  guardarCats();
+  renderSelects();
+  renderChips();
+}
+
+function setStatus(msg, ok) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.style.color = ok ? '#c8f060' : '#ff5c5c';
+  setTimeout(() => el.textContent = '', 3000);
+}
+
+function agregar() {
+  const n = document.getElementById('inp-nombre').value.trim();
+  const u = document.getElementById('inp-url').value.trim();
+  const c = document.getElementById('inp-cat').value;
+  const d = document.getElementById('inp-desc').value.trim();
+  if (!n || !u) { setStatus('Nombre y URL son obligatorios.', false); return; }
+  sitios.push({ id: Date.now(), nombre: n, url: u, categoria: c, desc: d });
+  guardar();
+  document.getElementById('inp-nombre').value = '';
+  document.getElementById('inp-url').value = '';
+  document.getElementById('inp-cat').value = '';
+  document.getElementById('inp-desc').value = '';
+  setStatus('Sitio guardado.', true);
+  renderTabla();
+}
+
+function eliminar(id) {
+  if (!confirm('¿Eliminar este sitio?')) return;
+  sitios = sitios.filter(s => s.id !== id);
+  guardar();
+  renderTabla();
+}
+
+function exportar() {
+  const blob = new Blob([JSON.stringify({ sitios, catsCustom }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sitios_utiles_backup.json';
+  a.click();
+}
+
+function importar(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const datos = JSON.parse(ev.target.result);
+      if (datos.sitios) { sitios = datos.sitios; guardar(); }
+      if (datos.catsCustom) { catsCustom = datos.catsCustom; guardarCats(); }
+      renderSelects(); renderChips(); renderTabla();
+      setStatus('Datos importados correctamente.', true);
+    } catch(err) { setStatus('Error al importar el archivo.', false); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function renderTabla() {
+  const q = document.getElementById('buscador').value.toLowerCase();
+  const cat = document.getElementById('filtro-cat').value;
+  const filtrados = sitios.filter(s => {
+    const matchQ = !q || s.nombre.toLowerCase().includes(q) || (s.desc||'').toLowerCase().includes(q) || s.url.toLowerCase().includes(q);
+    const matchC = !cat || s.categoria === cat;
+    return matchQ && matchC;
+  });
+  document.getElementById('contador').textContent = filtrados.length + ' sitio' + (filtrados.length !== 1 ? 's' : '');
+  const tbody = document.getElementById('tabla-body');
+  if (filtrados.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">no hay sitios guardados.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtrados.map(s => `
+    <tr>
+      <td class="name-cell">${s.nombre}</td>
+      <td class="link-cell"><a href="${s.url}" target="_blank">${s.url}</a></td>
+      <td>${s.categoria ? '<span class="badge">' + s.categoria + '</span>' : ''}</td>
+      <td class="desc-cell">${s.desc||''}</td>
+      <td><button class="btn-del" onclick="eliminar(${s.id})">✕</button></td>
+    </tr>
+  `).join('');
+}
+
+renderSelects();
+renderChips();
+renderTabla();
+</script>
+</body>
+</html>
