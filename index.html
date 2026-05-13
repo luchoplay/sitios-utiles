@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sitios Web Útiles</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -30,9 +31,9 @@
   textarea { resize: vertical; min-height: 64px; }
   .cat-custom-row { display: flex; gap: 8px; align-items: stretch; }
   .cat-custom-row input { flex: 1; }
-  .btn-cat-add { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 0 14px; font-family: var(--font-mono); font-size: 18px; color: var(--accent); cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+  .btn-cat-add { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 0 14px; font-family: var(--font-mono); font-size: 18px; color: var(--accent); cursor: pointer; transition: background 0.15s; }
   .btn-cat-add:hover { background: #1e2a0e; }
-  .cat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 0; }
+  .cat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-family: var(--font-mono); background: #1e2a0e; color: var(--accent); border: 1px solid #2e3f14; }
   .chip button { background: none; border: none; cursor: pointer; color: var(--accent-dim); font-size: 12px; padding: 0; line-height: 1; }
   .chip button:hover { color: var(--danger); }
@@ -63,7 +64,6 @@
     .form-grid { grid-template-columns: 1fr; }
     .toolbar { flex-direction: column; }
     .toolbar select { width: 100%; }
-    table { font-size: 12px; }
   }
 </style>
 </head>
@@ -127,22 +127,26 @@
         <th style="width:5%"></th>
       </tr>
     </thead>
-    <tbody id="tabla-body"></tbody>
+    <tbody id="tabla-body"><tr><td colspan="5" class="empty">cargando...</td></tr></tbody>
   </table>
 </div>
 
 <script>
+const SUPABASE_URL = 'https://pykmqoczftewidaaeged.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_XQMSfy439RPVl6OeoWiZqA_9iupOVys';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const CATS_DEFAULT = ['Transcripción / Subtítulos','Diseño','IA / Automatización','Productividad','Video / Audio','Marketing','Desarrollo','Otro'];
-let sitios = JSON.parse(localStorage.getItem('sitios_utiles') || '[]');
+let sitios = [];
 let catsCustom = JSON.parse(localStorage.getItem('cats_custom') || '[]');
 
-if (sitios.length === 0) {
-  sitios = [{ id: Date.now(), nombre: 'Downsub', url: 'https://downsub.com', categoria: 'Transcripción / Subtítulos', desc: 'Descarga subtítulos y transcripciones de videos de YouTube en texto, sin registro ni instalación.' }];
-  guardar();
+async function cargarSitios() {
+  const { data, error } = await sb.from('sitios').select('*').order('id', { ascending: false });
+  if (error) { setStatus('Error al cargar datos.', false); return; }
+  sitios = data || [];
+  renderTabla();
 }
 
-function guardar() { localStorage.setItem('sitios_utiles', JSON.stringify(sitios)); }
-function guardarCats() { localStorage.setItem('cats_custom', JSON.stringify(catsCustom)); }
 function todasLasCats() { return [...CATS_DEFAULT, ...catsCustom]; }
 
 function renderSelects() {
@@ -164,7 +168,7 @@ function agregarCategoria() {
   if (!val) return;
   if (todasLasCats().map(c=>c.toLowerCase()).includes(val.toLowerCase())) { setStatus('Esa categoría ya existe.', false); return; }
   catsCustom.push(val);
-  guardarCats();
+  localStorage.setItem('cats_custom', JSON.stringify(catsCustom));
   inp.value = '';
   renderSelects();
   renderChips();
@@ -173,7 +177,7 @@ function agregarCategoria() {
 
 function eliminarCategoria(cat) {
   catsCustom = catsCustom.filter(c => c !== cat);
-  guardarCats();
+  localStorage.setItem('cats_custom', JSON.stringify(catsCustom));
   renderSelects();
   renderChips();
 }
@@ -185,27 +189,27 @@ function setStatus(msg, ok) {
   setTimeout(() => el.textContent = '', 3000);
 }
 
-function agregar() {
+async function agregar() {
   const n = document.getElementById('inp-nombre').value.trim();
   const u = document.getElementById('inp-url').value.trim();
   const c = document.getElementById('inp-cat').value;
   const d = document.getElementById('inp-desc').value.trim();
   if (!n || !u) { setStatus('Nombre y URL son obligatorios.', false); return; }
-  sitios.push({ id: Date.now(), nombre: n, url: u, categoria: c, desc: d });
-  guardar();
+  const { error } = await sb.from('sitios').insert([{ nombre: n, url: u, categoria: c, descripcion: d }]);
+  if (error) { setStatus('Error al guardar.', false); return; }
   document.getElementById('inp-nombre').value = '';
   document.getElementById('inp-url').value = '';
   document.getElementById('inp-cat').value = '';
   document.getElementById('inp-desc').value = '';
   setStatus('Sitio guardado.', true);
-  renderTabla();
+  await cargarSitios();
 }
 
-function eliminar(id) {
+async function eliminar(id) {
   if (!confirm('¿Eliminar este sitio?')) return;
-  sitios = sitios.filter(s => s.id !== id);
-  guardar();
-  renderTabla();
+  const { error } = await sb.from('sitios').delete().eq('id', id);
+  if (error) { setStatus('Error al eliminar.', false); return; }
+  await cargarSitios();
 }
 
 function exportar() {
@@ -220,14 +224,19 @@ function importar(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function(ev) {
+  reader.onload = async function(ev) {
     try {
       const datos = JSON.parse(ev.target.result);
-      if (datos.sitios) { sitios = datos.sitios; guardar(); }
-      if (datos.catsCustom) { catsCustom = datos.catsCustom; guardarCats(); }
-      renderSelects(); renderChips(); renderTabla();
+      if (datos.sitios && datos.sitios.length > 0) {
+        const rows = datos.sitios.map(s => ({ nombre: s.nombre, url: s.url, categoria: s.categoria||'', descripcion: s.desc||s.descripcion||'' }));
+        const { error } = await sb.from('sitios').insert(rows);
+        if (error) { setStatus('Error al importar.', false); return; }
+      }
+      if (datos.catsCustom) { catsCustom = datos.catsCustom; localStorage.setItem('cats_custom', JSON.stringify(catsCustom)); }
+      renderSelects(); renderChips();
+      await cargarSitios();
       setStatus('Datos importados correctamente.', true);
-    } catch(err) { setStatus('Error al importar el archivo.', false); }
+    } catch(err) { setStatus('Error al leer el archivo.', false); }
   };
   reader.readAsText(file);
   e.target.value = '';
@@ -237,7 +246,7 @@ function renderTabla() {
   const q = document.getElementById('buscador').value.toLowerCase();
   const cat = document.getElementById('filtro-cat').value;
   const filtrados = sitios.filter(s => {
-    const matchQ = !q || s.nombre.toLowerCase().includes(q) || (s.desc||'').toLowerCase().includes(q) || s.url.toLowerCase().includes(q);
+    const matchQ = !q || s.nombre.toLowerCase().includes(q) || (s.descripcion||'').toLowerCase().includes(q) || s.url.toLowerCase().includes(q);
     const matchC = !cat || s.categoria === cat;
     return matchQ && matchC;
   });
@@ -252,7 +261,7 @@ function renderTabla() {
       <td class="name-cell">${s.nombre}</td>
       <td class="link-cell"><a href="${s.url}" target="_blank">${s.url}</a></td>
       <td>${s.categoria ? '<span class="badge">' + s.categoria + '</span>' : ''}</td>
-      <td class="desc-cell">${s.desc||''}</td>
+      <td class="desc-cell">${s.descripcion||''}</td>
       <td><button class="btn-del" onclick="eliminar(${s.id})">✕</button></td>
     </tr>
   `).join('');
@@ -260,7 +269,7 @@ function renderTabla() {
 
 renderSelects();
 renderChips();
-renderTabla();
+cargarSitios();
 </script>
 </body>
 </html>
